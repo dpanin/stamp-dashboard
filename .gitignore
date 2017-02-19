@@ -100,6 +100,7 @@ ENV/
 # Flask stuff:
 instance/
 .webassets-cache
+.pylintrc 
 
 # DB Migrations
 app/migrations
