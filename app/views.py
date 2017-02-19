@@ -5,8 +5,8 @@ from flask import request
 
 
 @app.route('/', methods=['GET', 'POST'])
-@app.route('/index', methods=['GET', 'POST'])
-def index():
+@app.route('/login', methods=['GET', 'POST'])
+def login():
     form = LoginForm()
     app.logger.debug(form.password.data)
     if form.validate_on_submit():
@@ -14,8 +14,8 @@ def index():
             return redirect('/home')
         else:
             error = 'Error'
-            return render_template('index.html', form=form, error = error)
-    return render_template('index.html', title='Sign In', form=form)
+            return render_template('login.html', form=form, error = error)
+    return render_template('login.html', title='Sign In', form=form)
 
 @app.route('/home')
 def home():
