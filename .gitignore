@@ -104,6 +104,11 @@ instance/
 
 # DB Migrations
 app/migrations
+migrations/
+*.rdb
+
+# Temp files
+report.csv
 
 # Ignore tags created by etags, ctags, gtags (GNU global) and cscope
 TAGS
