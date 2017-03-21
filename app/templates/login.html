@@ -1,30 +1,68 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Signin</title>
-    <link href="../static/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../static/css/signin.css" rel="stylesheet">
-  </head>
-  <body>
-    <div class="container">
-      <form class="form-signin" action="" method="post" name="login">
-        {{ form.hidden_tag() }}
-        <h2 class="form-signin-heading">Вход</h2>
-        <label for="inputEmail" class="sr-only">Email</label>
-        {{ form.email(class="form-control", placeholder="Email") }}
-        <label for="inputPassword" class="sr-only">Password</label>
-        {{ form.password(class="form-control", placeholder="Пароль") }}
-        <div class="checkbox">
-          <label>
-            {{ form.remember_me }} Запомнить меня
-          </label>
-        </div>
-        <button class="btn btn-lg btn-primary btn-block" type="submit">Войти</button>
-        {% if error %}<div class="alert alert-danger" role="alert"><b>Неправильный логин или пароль!</b></div> {% endif %}
-      </form>
-      </div>
-    </body>
-  </html>
+
+<head>
+	<title>Sign In</title>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+	<!-- CSS -->
+	<link rel="stylesheet" href="../static/css/bootstrap.min.css">
+	<link rel="stylesheet" href="../static/css/vendor/icon-sets.css">
+	<link rel="stylesheet" href="../static/css/main.min.css">
+	<!-- GOOGLE FONTS -->
+	<link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" rel="stylesheet">
+	<!-- ICONS -->
+	<link rel="apple-touch-icon" sizes="76x76" href="../static/img/apple-icon.png">
+	<link rel="icon" type="image/png" sizes="96x96" href="../static/img/favicon.png">
+</head>
+
+<body>
+	<!-- WRAPPER -->
+	<div id="wrapper">
+		<div class="vertical-align-wrap">
+			<div class="vertical-align-middle">
+				<div class="container-fluid">
+					<div class="col-md-4"></div>
+					<div class="col-md-4">
+						<div class="panel">
+							<div class="panel-heading"></div>
+							<div class="panel-body">
+								<div class="content">
+									<form class="form-auth-small" action="" method="post" name="login">
+										{{ form.hidden_tag() }}
+										<div class="form-group">
+											<label for="signup-email" class="control-label sr-only">Email</label> {{ form.email(class="form-control", placeholder="Email")
+											}}
+										</div>
+										<div class="form-group">
+											<label for="signup-password" class="control-label sr-only">Пароль</label> {{ form.password(class="form-control",
+											placeholder="Пароль") }}
+										</div>
+										<div class="form-group clearfix">
+											<label class="fancy-checkbox element-left">
+										{{ form.remember_me }}
+										<span>Запомнить меня</span>
+									</label>
+										</div>
+										<button type="submit" class="btn btn-primary btn-lg btn-block">Войти</button>
+										<br>
+								</div>
+							</div>
+						</div>
+						{% if error %}
+						<div class="alert alert-danger">
+							<strong>Ошибка!</strong> Неправильно введен логин или пароль.
+						</div>
+						{% endif %}
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	</div>
+	<!-- END WRAPPER -->
+</body>
+
+</html>

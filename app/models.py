@@ -1,11 +1,20 @@
-from app import db
-from werkzeug.security import generate_password_hash, check_password_hash
-from . import login_manager
+import csv
+import os
+import time
+from datetime import datetime
+
+from app import db, reds
 from flask_login import UserMixin
+from sqlalchemy import desc
+from werkzeug.security import check_password_hash, generate_password_hash
+
+from . import login_manager
+
 
 @login_manager.user_loader
 def load_user(user_id):
     return User.query.get(int(user_id))
+
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -13,7 +22,7 @@ class User(UserMixin, db.Model):
     username = db.Column(db.String(64), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     email = db.Column(db.String(64), index=True, unique=True)
-
+    role_id = db.Column(db.Integer)
     # Хеширование паролей
     @property
     def password(self):
@@ -30,23 +39,122 @@ class User(UserMixin, db.Model):
         return '<User %r>' % (self.username)
 
 
-class Table(db.Model):
-    __tablename__ = 'table'
+class Document(db.Model):
+    __tablename__ = 'document'
     id = db.Column(db.Integer, primary_key=True)
-    registration_number = db.Column(db.String(15))
-    date_declaration = db.Column(db.Date)
-    date_stamp_preparation = db.Column(db.Date)
-    data_obligation_received = db.Column(db.Date)
-    date_provision_received = db.Column(db.Date)
-    datr_stamp_received = db.Column(db.Date)
-    date_report_closed = db.Column(db.Date)
+    registration_number = db.Column(db.String(15), unique=True)
+    date_declaration = db.Column(db.DateTime)
+    date_stamp_preparation = db.Column(db.DateTime)
+    date_obligation_received = db.Column(db.DateTime)
+    date_provision_received = db.Column(db.DateTime)
+    date_stamp_received = db.Column(db.DateTime)
+    date_report_closed = db.Column(db.DateTime)
+    date_last_changed = db.Column(db.DateTime)
     status_id = db.Column(db.Integer, db.ForeignKey('status.id'))
+    status = db.relationship(
+        'Status', backref=db.backref('documents', lazy='dynamic'))
+
+    columns = {
+        1: "date_declaration",
+        2: "date_stamp_preparation",
+        3: "date_obligation_received",
+        4: "date_provision_received",
+        5: "date_stamp_received",
+        6: "date_report_closed"
+    }
+
+    @classmethod
+    def add(cls, reg_number):
+        dt = datetime.now()
+        ts = time.time()
+        status = Status.query.filter_by(id=1).first()
+        query = Document(
+            registration_number=reg_number,
+            date_declaration=dt,
+            date_last_changed=dt,
+            status=status)
+        db.session.add(query)
+        db.session.commit()
+        reds.zadd(1, ts, reg_number)
+
+    def format_query(query):
+        results = []
+        for instance in query:
+            l = [
+                instance.registration_number, instance.date_declaration,
+                instance.date_stamp_preparation,
+                instance.date_obligation_received,
+                instance.date_provision_received, instance.date_stamp_received,
+                instance.date_report_closed, instance.status
+            ]
+            for i in range(len(l)):
+                if isinstance(l[i], datetime):
+                    l[i] = l[i].strftime('%d.%m.%Y')
+                elif l[i] == None:
+                    l[i] = "-"
+                else:
+                    continue
+            results.append(l)
+        return results
+
+    @classmethod
+    def get(cls, lim=10):
+        query = db.session.query(Document).order_by(
+            desc(Document.date_last_changed)).limit(lim).all()
+        return Document.format_query(query)
+
+    @classmethod
+    def get_csv(cls):
+        header = ('Регистрационный номер', 'Дата регистрации',
+                  'Дата информирования об изготовлении', 'Дата принятия обязательства',
+                  'Дата принятия обеспечения', 'График получения',
+                  'Дата закрытия отчета', 'Статус заявления')
+        contents = Document.get(-1)
+        with open('app/report.csv', 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(header)
+            writer.writerows(contents)
+        basedir = os.path.abspath(os.path.dirname(__file__))
+        filedir = os.path.join(basedir, 'report.csv')
+        return filedir
+
+    @classmethod
+    def search(cls, keyword):
+        print(keyword)
+        query = db.session.query(Document).filter_by(
+            registration_number=keyword).all()
+        return Document.format_query(query)
+
+    @classmethod
+    def update(cls, reg_number, id):
+        id = int(id)
+        dt = datetime.now()
+        ts = time.time()
+        s_id = str(id + 1)
+        db.session.query(Document).filter_by(
+            registration_number=reg_number).update(
+                {
+                    cls.columns[id]: dt,
+                    "status_id": s_id
+                },
+                synchronize_session=False)
+        db.session.commit()
+        reds.zrem(id, reg_number)
+        reds.zadd(id+1, ts, reg_number)
 
     def __repr__(self):
-        return '<Table %r>' % (self.registration_number)
+        return '<Document %r>' % (self.registration_number)
 
 
 class Status(db.Model):
     __tablename__ = 'status'
     id = db.Column(db.Integer, primary_key=True)
-    status = db.Column(db.String(64), index=True, unique=True)
+    name = db.Column(db.String(64), index=True, unique=True)
+
+    def __repr__(self):
+        return '<Status %r>' % (self.name)
+
+
+# t = db.session.query(models.Table, models.Status).join(models.Status, models.Status.id == models.Table.id).all()
+# for table, status in t:
+#   print(table.date_declaration)
