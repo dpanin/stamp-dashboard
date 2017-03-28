@@ -17,22 +17,27 @@ def load_user(user_id):
 
 
 class User(UserMixin, db.Model):
+    """Users table scheme."""
+
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(64), index=True, unique=True)
     password_hash = db.Column(db.String(128))
     email = db.Column(db.String(64), index=True, unique=True)
     role_id = db.Column(db.Integer)
-    # Хеширование паролей
+
+    # Only allow to add password
     @property
     def password(self):
         raise AttributeError('password is not a readable attribute')
 
     @password.setter
     def password(self, password):
+        """Writes hashed password to database."""
         self.password_hash = generate_password_hash(password)
 
     def verify_password(self, password):
+        """Compares password with hashed version in database."""
         return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
@@ -40,6 +45,8 @@ class User(UserMixin, db.Model):
 
 
 class Document(db.Model):
+    """Table scheme with documents status."""
+
     __tablename__ = 'document'
     id = db.Column(db.Integer, primary_key=True)
     registration_number = db.Column(db.String(15), unique=True)
@@ -65,6 +72,7 @@ class Document(db.Model):
 
     @classmethod
     def add(cls, reg_number):
+        """Adds registration number to database and Redis queue."""
         dt = datetime.now()
         ts = time.time()
         status = Status.query.filter_by(id=1).first()
@@ -78,6 +86,7 @@ class Document(db.Model):
         reds.zadd(1, ts, reg_number)
 
     def format_query(query):
+        """Makes datetime more readable and replaces empty cells with '-'."""
         results = []
         for instance in query:
             l = [
@@ -99,16 +108,19 @@ class Document(db.Model):
 
     @classmethod
     def get(cls, lim=10):
+        """Returns last 10 entries from 'Documents' table."""
         query = db.session.query(Document).order_by(
             desc(Document.date_last_changed)).limit(lim).all()
         return Document.format_query(query)
 
     @classmethod
     def get_csv(cls):
+        """Exports 'Documents' table to csv file."""
         header = ('Регистрационный номер', 'Дата регистрации',
-                  'Дата информирования об изготовлении', 'Дата принятия обязательства',
-                  'Дата принятия обеспечения', 'График получения',
-                  'Дата закрытия отчета', 'Статус заявления')
+                  'Дата информирования об изготовлении',
+                  'Дата принятия обязательства', 'Дата принятия обеспечения',
+                  'График получения', 'Дата закрытия отчета',
+                  'Статус заявления')
         contents = Document.get(-1)
         with open('app/report.csv', 'w', newline='') as f:
             writer = csv.writer(f)
@@ -120,6 +132,7 @@ class Document(db.Model):
 
     @classmethod
     def search(cls, keyword):
+        """Searches entry with the same registration number."""
         print(keyword)
         query = db.session.query(Document).filter_by(
             registration_number=keyword).all()
@@ -127,6 +140,7 @@ class Document(db.Model):
 
     @classmethod
     def update(cls, reg_number, id):
+        """Changes status, datetime and moves entry to another Redis queue."""
         id = int(id)
         dt = datetime.now()
         ts = time.time()
@@ -140,21 +154,17 @@ class Document(db.Model):
                 synchronize_session=False)
         db.session.commit()
         reds.zrem(id, reg_number)
-        reds.zadd(id+1, ts, reg_number)
+        reds.zadd(id + 1, ts, reg_number)
 
     def __repr__(self):
         return '<Document %r>' % (self.registration_number)
 
 
 class Status(db.Model):
+    """Status table scheme"""
     __tablename__ = 'status'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(64), index=True, unique=True)
 
     def __repr__(self):
         return '<Status %r>' % (self.name)
-
-
-# t = db.session.query(models.Table, models.Status).join(models.Status, models.Status.id == models.Table.id).all()
-# for table, status in t:
-#   print(table.date_declaration)
