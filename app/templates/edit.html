@@ -30,8 +30,8 @@
 			<div class="sidebar-scroll">
 				<nav>
 					<ul class="nav">
-						<li><a href="{{ url_for('home') }}" class=""><i class="lnr lnr-home"></i> <span>Панель управления</span></a></li>
-						<li><a href="{{ url_for('edit') }}" class="active"><i class="lnr lnr-pencil"></i> <span>Обновление статуса</span></a></li>
+						<li><a href="{{ url_for('edit') }}" class="active"><i class="lnr lnr-home"></i> <span>Панель управления</span></a></li>
+						<li><a href="{{ url_for('search') }}" class=""><i class="lnr lnr-magnifier"></i> <span>Поиск</span></a></li>
 					</ul>
 				</nav>
 			</div>
@@ -76,7 +76,7 @@
 						<div class="row">
 							<div class="col-md-6">
 								<!-- RECENT PURCHASES -->
-								<div class="panel" style="margin-left: 15px;">
+								<div class="panel panel-headline" style="margin-left: 15px;">
 									<div class="panel-heading">
 										<h3 class="panel-title">Поиск по заявлениям</h3>
 									</div>
@@ -134,11 +134,13 @@
 												<td>{{ item[6] }}</td>
 												<td>{{ item[7].name }}</td>
 												<td>
+													{% if user.role_id == item[7].id %}
 													<form action="" method="post" name="update">
 														{{ form.hidden_tag() }}
 														<input type="hidden" name="reg_number" value="{{ item[0] }}" />
 														<input type="hidden" name="status" value="{{ item[7].id }}" />
 														<button type="submit" class="btn btn-default btn-xs"><span class="lnr lnr-pencil" aria-hidden="true"></span></button>
+													{% endif %}
 												</td>
 												</form>
 
