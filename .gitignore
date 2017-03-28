@@ -96,6 +96,7 @@ ENV/
 !.vscode/launch.json
 !.vscode/extensions.json
 .vscode
+.idea
 
 # Flask stuff:
 instance/
@@ -109,6 +110,7 @@ migrations/
 
 # Temp files
 report.csv
+app.db
 
 # Ignore tags created by etags, ctags, gtags (GNU global) and cscope
 TAGS
