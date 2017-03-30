@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import (BooleanField, PasswordField, StringField, SubmitField,
+from wtforms import (BooleanField, PasswordField, StringField,
                      ValidationError)
 from wtforms.validators import DataRequired, Email, Length, Regexp
 
@@ -23,6 +23,7 @@ class RegisterForm(FlaskForm):
         """Checks if an entry with same number was registered before."""
         if Document.query.filter_by(registration_number=field.data).first():
             raise ValidationError('Заявление уже было зарегистрировано.')
+
 
 class SearchForm(FlaskForm):
     keyword = StringField('Registration Number')

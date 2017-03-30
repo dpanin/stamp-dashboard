@@ -41,7 +41,7 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
 
     def __repr__(self):
-        return '<User %r>' % (self.username)
+        return '<User %r>' % self.username
 
 
 class Document(db.Model):
@@ -85,6 +85,7 @@ class Document(db.Model):
         db.session.commit()
         reds.zadd(1, ts, reg_number)
 
+    @staticmethod
     def format_query(query):
         """Makes datetime more readable and replaces empty cells with '-'."""
         results = []
@@ -99,7 +100,7 @@ class Document(db.Model):
             for i in range(len(l)):
                 if isinstance(l[i], datetime):
                     l[i] = l[i].strftime('%d.%m.%Y')
-                elif l[i] == None:
+                elif l[i] is None:
                     l[i] = "-"
                 else:
                     continue
@@ -111,7 +112,7 @@ class Document(db.Model):
         """Returns last 10 entries from 'Documents' table."""
         query = db.session.query(Document).order_by(
             desc(Document.date_last_changed)).limit(lim).all()
-        return Document.format_query(query)
+        return cls.format_query(query)
 
     @classmethod
     def get_csv(cls):
@@ -136,28 +137,28 @@ class Document(db.Model):
         print(keyword)
         query = db.session.query(Document).filter_by(
             registration_number=keyword).all()
-        return Document.format_query(query)
+        return cls.format_query(query)
 
     @classmethod
-    def update(cls, reg_number, id):
+    def update(cls, reg_number, id_number):
         """Changes status, datetime and moves entry to another Redis queue."""
-        id = int(id)
-        dt = datetime.now()
-        ts = time.time()
-        s_id = str(id + 1)
+        id_number = int(id_number)
+        dtime = datetime.now()
+        tstamp = time.time()
+        s_id = str(id_number + 1)
         db.session.query(Document).filter_by(
             registration_number=reg_number).update(
                 {
-                    cls.columns[id]: dt,
+                    cls.columns[id_number]: dtime,
                     "status_id": s_id
                 },
                 synchronize_session=False)
         db.session.commit()
-        reds.zrem(id, reg_number)
-        reds.zadd(id + 1, ts, reg_number)
+        reds.zrem(id_number, reg_number)
+        reds.zadd(id_number + 1, tstamp, reg_number)
 
     def __repr__(self):
-        return '<Document %r>' % (self.registration_number)
+        return '<Document %r>' % self.registration_number
 
 
 class Status(db.Model):
@@ -167,4 +168,4 @@ class Status(db.Model):
     name = db.Column(db.String(64), index=True, unique=True)
 
     def __repr__(self):
-        return '<Status %r>' % (self.name)
+        return '<Status %r>' % self.name

@@ -1,6 +1,4 @@
-from datetime import datetime
-
-from app import app, db, reds
+from app import app, reds
 from flask import flash, g, redirect, render_template, request, send_file
 from flask_login import current_user, login_required, login_user, logout_user
 
@@ -44,7 +42,6 @@ def logout():
 @login_required
 def home():
     """A page with recent entries, entry registration and csv export."""
-    error = None
     user = g.user
     # TODO Replace with decorator
     # Redirects to edit page if user doesn't have permissions.
@@ -101,7 +98,7 @@ def return_files():
 def edit():
     """A page with entry editing tools."""
     user = g.user
-    #TODO Reolace with decorator
+    # TODO Replace with decorator
     if user.role_id == 0:
         return redirect('/home')
     form = SearchForm()
@@ -110,7 +107,6 @@ def edit():
     if form.validate_on_submit():
         if form.keyword.data:
             table_results = Document.search(form.keyword.data)
-            last_input = form.keyword.data
             return render_template(
                 'edit.html',
                 title='Edit',
@@ -120,8 +116,8 @@ def edit():
         # Update entry if User pressed the button.
         if request.form['status']:
             reg_number = request.form['reg_number']
-            id = request.form['status']
-            Document.update(reg_number, id)
+            doc_id = request.form['status']
+            Document.update(reg_number, doc_id)
 
     return render_template(
         'edit.html',
@@ -139,10 +135,10 @@ def search():
     if form.validate_on_submit():
         table_results = Document.search(form.keyword.data)
         status = table_results[0][7].name
-        id = table_results[0][7].id
-        #TODO: Change error handling
+        doc_id = table_results[0][7].id
+        # TODO: Change error handling
         try:
-            queue_number = reds.zrank(id, form.keyword.data) + 1
+            queue_number = reds.zrank(doc_id, form.keyword.data) + 1
         except:
             queue_number = 'Ошибка'
         return render_template(
