@@ -25,8 +25,8 @@ def login():
             return redirect('/home')
         else:
             error = 'Error'
-            return render_template('login.html', form=form, error=error)
-    return render_template('login.html', title='Sign In', form=form)
+            return render_template('login.html', title='Логин', form=form, error=error)
+    return render_template('login.html', title='Логин', form=form)
 
 
 @app.route('/logout')
@@ -59,7 +59,7 @@ def home():
             flash("Ошибка! Заявление с таким номером уже существует.")
             return render_template(
                 'home.html',
-                title='Home',
+                title='Добавление заявления',
                 user=user,
                 form=form,
                 table_results=table_results)
@@ -68,23 +68,23 @@ def home():
         flash("Заявление успешно зарегистрированно.")
         return render_template(
             'home.html',
-            title='Home',
+            title='Добавление заявления',
             user=user,
             form=form,
-            table_results=table_results,)
+            table_results=table_results)
     # If form doesn't validate and isn't empty, then return error.
     elif form.reg_number.data is not None:
         flash("Ошибка! Проверьте введенные данные.")
         return render_template(
             'home.html',
-            title='Home',
+            title='Добавление заявления',
             user=user,
             form=form,
             table_results=table_results)
 
     return render_template(
         'home.html',
-        title='Home',
+        title='Добавление заявления',
         user=user,
         form=form,
         table_results=table_results)
@@ -121,7 +121,7 @@ def edit():
                 flash("Ошибка! Заявление не найдено.")
             return render_template(
                 'edit.html',
-                title='Edit',
+                title='Редактирование заявления',
                 user=user,
                 form=form,
                 table_results=table_results)
@@ -131,10 +131,18 @@ def edit():
             doc_id = request.form['status']
             Document.update(reg_number, doc_id)
             flash("Заявление успешно обновлено.")
+    elif form.reg_number.data is not None:
+        flash("Ошибка! Проверьте введенные данные.")
+        return render_template(
+            'edit.html',
+            title='Редактирование заявления',
+            user=user,
+            form=form,
+            table_results=table_results)
 
     return render_template(
         'edit.html',
-        title='Edit',
+        title='Редактирование заявления',
         user=user,
         form=form,
         table_results=table_results)
@@ -157,7 +165,7 @@ def search():
             queue_number = 'Ошибка'
         return render_template(
             'search.html',
-            title='Search',
+            title='Поиск',
             form=form,
             status=status,
             queue_number=queue_number,
@@ -166,4 +174,4 @@ def search():
         flash("Ошибка! Проверьте введенные данные.")
         return render_template('search.html', title='Поиск', form=form)
 
-    return render_template('search.html', title='Search', form=form)
+    return render_template('search.html', title='Поиск', form=form)
