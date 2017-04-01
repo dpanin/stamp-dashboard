@@ -1,96 +1,102 @@
 {% extends "navigation.html" %} {% set active_page = "home" %} {% block content %}
-<!-- MAIN CONTENT -->
-<div class="main-content">
-	<div class="container-fluid">
-		<h3 class="page-title">Регистрация заказа</h3>
-		<div class="row">
-			<div class="col-md-6">
-				<!-- RECENT PURCHASES -->
-				<div class="panel panel-headline">
-					<div class="panel-heading">
-						<h3 class="panel-title">Регистрационный номер</h3>
-					</div>
-					<div class="panel-body">
-						<form action="" method="post" name="login">
-							{{ form.hidden_tag() }} {{ form.reg_number(class="form-control input-lg", placeholder="XXXXXX/17/XXXXXX") }}
-							<br>
-							<p><b>Первые шесть цифр</b> - код уполномоченного таможенного органа</p>
-							<p><b>17</b> - год регистрации</p>
-							<p><b>Последние пять цифр</b> - регистрационный номер заявления</p>
-							<br>
-							<p class="demo-button">
-								<button type="submit" class="btn btn-primary">Зарегистрировать</button>
-							</p>
-						</form>
-					</div>
-				</div>
-			</div>
-			<!-- END RECENT PURCHASES -->
-			<div class="col-md-6">
-				<!-- MULTI CHARTS -->
-				<div class="panel panel-headline">
-					<div class="panel-heading">
-						<h3 class="panel-title">Скачать полную таблицу в формате Excel</h3>
-					</div>
-					<div class="panel-body">
-						<p>
-							<form action="{{ url_for('return_files') }}" name="download-file">
-								<button type="submit" class="btn btn-primary">Скачать</button>
-							</form>
-						</p>
-					</div>
-				</div>
-				{% if error == 'Validate Error' %}
-				<div class="alert alert-danger">
-					Ошибка! Проверьте введенные данные.
-				</div>
-				{% elif error == 'Success' %}
-				<div class="alert alert-success">
-					Заявление успешно зарегистрированно!
-				</div>
-				{% endif %}
-				<!-- END MULTI CHARTS -->
-			</div>
-		</div>
-		<!-- OVERVIEW -->
-		<div class="panel panel-headline">
-			<div class="panel-heading">
-				<h3 class="panel-title">Последние зарегистрированные</h3>
-			</div>
-			<div class="panel-body no-padding">
-				<div class="table-responsive">
-					<table class="table table-striped">
-						<thead>
-							<tr>
-								<th>Регистрационный номер</th>
-								<th>Дата регистрации</th>
-								<th>Дата информирования об изготовлении</th>
-								<th>Дата принятия обязательства</th>
-								<th>Дата принятия обеспечения</th>
-								<th>График получения</th>
-								<th>Закрытие отчета</th>
-								<th>Статус заявления</th>
-							</tr>
-						</thead>
-						<tbody>
-							{% for item in table_results %}
-							<tr>
-								<td>{{ item[0] }}</td>
-								<td>{{ item[1] }}</td>
-								<td>{{ item[2] }}</td>
-								<td>{{ item[3] }}</td>
-								<td>{{ item[4] }}</td>
-								<td>{{ item[5] }}</td>
-								<td>{{ item[6] }}</td>
-								<td>{{ item[7].name }}</td>
-							</tr>
-							{% endfor %}
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</div>
-		<!-- END OVERVIEW -->
-	</div>
-</div>
+    <!-- MAIN CONTENT -->
+    <div class="main-content">
+        <div class="container-fluid">
+            <h3 class="page-title">Регистрация заказа</h3>
+            <div class="row">
+                <div class="col-md-6">
+                    <!-- RECENT PURCHASES -->
+                    <div class="panel panel-headline">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Регистрационный номер</h3>
+                        </div>
+                        <div class="panel-body">
+                            <form action="" method="post" name="login">
+                                {{ form.hidden_tag() }} {{ form.reg_number(class="form-control input-lg", placeholder="XXXXXX/17/XXXXXX") }}
+                                <br>
+                                <p><b>Первые шесть цифр</b> - код уполномоченного таможенного органа</p>
+                                <p><b>17</b> - год регистрации</p>
+                                <p><b>Последние пять цифр</b> - регистрационный номер заявления</p>
+                                <br>
+                                <p class="demo-button">
+                                    <button type="submit" class="btn btn-primary">Зарегистрировать</button>
+                                </p>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <!-- END RECENT PURCHASES -->
+                <div class="col-md-6">
+                    <!-- MULTI CHARTS -->
+                    <div class="panel panel-headline">
+                        <div class="panel-heading">
+                            <h3 class="panel-title">Скачать полную таблицу в формате Excel</h3>
+                        </div>
+                        <div class="panel-body">
+                            <p>
+                            <form action="{{ url_for('return_files') }}" name="download-file">
+                                <button type="submit" class="btn btn-primary">Скачать</button>
+                            </form>
+                            </p>
+                        </div>
+                    </div>
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                {% if "Ошибка!" in message %}
+                                    <div class="alert alert-danger">
+                                        {{ message }}
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-success">
+                                        Заявление успешно зарегистрированно!
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    <!-- END MULTI CHARTS -->
+                </div>
+            </div>
+            <!-- OVERVIEW -->
+            <div class="panel panel-headline">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Последние зарегистрированные</h3>
+                </div>
+                <div class="panel-body no-padding">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                            <tr>
+                                <th>Регистрационный номер</th>
+                                <th>Дата регистрации</th>
+                                <th>Дата информирования об изготовлении</th>
+                                <th>Дата принятия обязательства</th>
+                                <th>Дата принятия обеспечения</th>
+                                <th>График получения</th>
+                                <th>Закрытие отчета</th>
+                                <th>Статус заявления</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for item in table_results %}
+                                <tr>
+                                    <td>{{ item[0] }}</td>
+                                    <td>{{ item[1] }}</td>
+                                    <td>{{ item[2] }}</td>
+                                    <td>{{ item[3] }}</td>
+                                    <td>{{ item[4] }}</td>
+                                    <td>{{ item[5] }}</td>
+                                    <td>{{ item[6] }}</td>
+                                    <td>{{ item[7].name }}</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- END OVERVIEW -->
+        </div>
+    </div>
 {% endblock %}

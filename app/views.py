@@ -50,28 +50,37 @@ def home():
     table_results = Document.get(3)
     form = RegisterForm()
 
+    # Form validation
     if form.validate_on_submit():
         reg_number = form.reg_number.data
+        results = Document.search(reg_number)
+        # If entry was added before
+        if results:
+            flash("Ошибка! Заявление с таким номером уже существует.")
+            return render_template(
+                'home.html',
+                title='Home',
+                user=user,
+                form=form,
+                table_results=table_results)
         Document.add(reg_number)
         table_results = Document.get(3)
-        error = 'Success'
+        flash("Заявление успешно зарегистрированно.")
         return render_template(
             'home.html',
             title='Home',
             user=user,
             form=form,
-            table_results=table_results,
-            error=error)
-    # If form doen't validate and isn't empty, then return error.
+            table_results=table_results,)
+    # If form doesn't validate and isn't empty, then return error.
     elif form.reg_number.data is not None:
-        error = 'Validate Error'
+        flash("Ошибка! Проверьте введенные данные.")
         return render_template(
             'home.html',
             title='Home',
             user=user,
             form=form,
-            table_results=table_results,
-            error=error)
+            table_results=table_results)
 
     return render_template(
         'home.html',
@@ -104,9 +113,12 @@ def edit():
     form = SearchForm()
     table_results = None
 
+    # Form validation
     if form.validate_on_submit():
         if form.keyword.data:
             table_results = Document.search(form.keyword.data)
+            if not table_results:
+                flash("Ошибка! Заявление не найдено.")
             return render_template(
                 'edit.html',
                 title='Edit',
@@ -118,6 +130,7 @@ def edit():
             reg_number = request.form['reg_number']
             doc_id = request.form['status']
             Document.update(reg_number, doc_id)
+            flash("Заявление успешно обновлено.")
 
     return render_template(
         'edit.html',

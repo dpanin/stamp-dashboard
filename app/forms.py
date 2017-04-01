@@ -19,11 +19,6 @@ class RegisterForm(FlaskForm):
         'Registration number',
         validators=[Length(15, 15), Regexp('\d{6}\/17\/\d{5}')])
 
-    def validate_reg_number(self, field):
-        """Checks if an entry with same number was registered before."""
-        if Document.query.filter_by(registration_number=field.data).first():
-            raise ValidationError('Заявление уже было зарегистрировано.')
-
 
 class SearchForm(FlaskForm):
     keyword = StringField('Registration Number')
