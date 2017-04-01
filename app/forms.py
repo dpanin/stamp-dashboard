@@ -13,12 +13,8 @@ class LoginForm(FlaskForm):
     remember_me = BooleanField('remember_me', default=False)
 
 
-class RegisterForm(FlaskForm):
+class SearchForm(FlaskForm):
     """Entry registration forms."""
     reg_number = StringField(
         'Registration number',
         validators=[Length(15, 15), Regexp('\d{6}\/17\/\d{5}')])
-
-
-class SearchForm(FlaskForm):
-    keyword = StringField('Registration Number')

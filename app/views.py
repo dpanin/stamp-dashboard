@@ -2,7 +2,7 @@ from app import app, reds
 from flask import flash, g, redirect, render_template, request, send_file
 from flask_login import current_user, login_required, login_user, logout_user
 
-from .forms import LoginForm, RegisterForm, SearchForm
+from .forms import LoginForm, SearchForm, SearchForm
 from .models import Document, User
 
 
@@ -48,7 +48,7 @@ def home():
     if user.role_id != 0:
         return redirect('/edit')
     table_results = Document.get(3)
-    form = RegisterForm()
+    form = SearchForm()
 
     # Form validation
     if form.validate_on_submit():
@@ -115,8 +115,8 @@ def edit():
 
     # Form validation
     if form.validate_on_submit():
-        if form.keyword.data:
-            table_results = Document.search(form.keyword.data)
+        if form.reg_number.data:
+            table_results = Document.search(form.reg_number.data)
             if not table_results:
                 flash("Ошибка! Заявление не найдено.")
             return render_template(
@@ -145,13 +145,14 @@ def search():
     """A search page, which displays entry current status."""
     form = SearchForm()
 
+    # Form validation
     if form.validate_on_submit():
-        table_results = Document.search(form.keyword.data)
+        table_results = Document.search(form.reg_number.data)
         status = table_results[0][7].name
         doc_id = table_results[0][7].id
         # TODO: Change error handling
         try:
-            queue_number = reds.zrank(doc_id, form.keyword.data) + 1
+            queue_number = reds.zrank(doc_id, form.reg_number.data) + 1
         except:
             queue_number = 'Ошибка'
         return render_template(
@@ -160,6 +161,9 @@ def search():
             form=form,
             status=status,
             queue_number=queue_number,
-            reg_number=form.keyword.data)
+            reg_number=form.reg_number.data)
+    elif form.reg_number.data is not None:
+        flash("Ошибка! Проверьте введенные данные.")
+        return render_template('search.html', title='Поиск', form=form)
 
     return render_template('search.html', title='Search', form=form)
