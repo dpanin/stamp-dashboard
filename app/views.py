@@ -2,7 +2,7 @@ from app import app, reds
 from flask import flash, g, redirect, render_template, request, send_file
 from flask_login import current_user, login_required, login_user, logout_user
 
-from .forms import LoginForm, SearchForm, SearchForm
+from .forms import LoginForm, SearchForm
 from .models import Document, User
 
 
