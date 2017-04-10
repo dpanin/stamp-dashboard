@@ -96,13 +96,35 @@ ENV/
 !.vscode/launch.json
 !.vscode/extensions.json
 .vscode
+.idea
 
 # Flask stuff:
 instance/
 .webassets-cache
+.pylintrc 
 
 # DB Migrations
 app/migrations
+migrations/
+*.rdb
 
-#Tags
+# Temp files
+report.csv
+app.db
+
+# Ignore tags created by etags, ctags, gtags (GNU global) and cscope
+TAGS
+.TAGS
+!TAGS/
 tags
+.tags
+!tags/
+gtags.files
+GTAGS
+GRTAGS
+GPATH
+GSYMS
+cscope.files
+cscope.out
+cscope.in.out
+cscope.po.out

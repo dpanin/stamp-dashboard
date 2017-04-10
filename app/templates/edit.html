@@ -1,0 +1,99 @@
+{% extends "navigation.html" %}
+{% set active_page = "edit" %}
+{% block content %}
+<!-- MAIN CONTENT -->
+<div class="main-content">
+	<div class="container-fluid">
+		<h3 class="page-title">Просмотр и изменение</h3>
+		<div class="row">
+			<div class="row">
+				<div class="col-md-6">
+					<!-- RECENT PURCHASES -->
+					<div class="panel panel-headline" style="margin-left: 15px;">
+						<div class="panel-heading">
+							<h3 class="panel-title">Поиск по заявлениям</h3>
+						</div>
+						<div class="panel-body">
+							<form action="" method="post" name="search">
+								{{ form.hidden_tag() }}
+								<p>Формат ввода: <b>XXXXXX/17/XXXXXX</b></p>
+								<br> {{ form.reg_number(class="form-control input-lg", placeholder="XXXXXX/17/XXXXXX") }}
+								<br>
+								<p class="demo-button">
+									<button type="submit" class="btn btn-primary">Найти</button>
+								</p>
+							</form>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-6">
+                       {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                {% if "Ошибка!" in message %}
+                                    <div class="alert alert-danger">
+                                        {{ message }}
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-success">
+                                        Заявление успешно обновлено.
+                                    </div>
+                                {% endif %}
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+				</div>
+			</div>
+			{% if table_results %}
+			<div class="panel" style="margin-left: 15px;">
+				<div class="panel-heading">
+					<h3 class="panel-title">Найдено:</h3>
+				</div>
+				<div class="panel-body no-padding">
+					<div class="table-responsive">
+						<table class="table table-striped">
+							<thead>
+								<tr>
+									<th>Регистрационный номер</th>
+									<th><b style="text-align: center;">Дата регистрации</b></th>
+									<th><b style="text-align: center;">Дата информирования об изготовлении</b></th>
+									<th>Дата принятия обязательства</th>
+									<th>Дата принятия обеспечения</th>
+									<th>График получения</th>
+									<th>Закрытие отчета</th>
+									<th>Статус заявления</th>
+									<th> </th>
+								</tr>
+							</thead>
+							<tbody>
+								{% for item in table_results %}
+								<tr>
+									<td>{{ item[0] }}</td>
+									<td>{{ item[1] }}</td>
+									<td>{{ item[2] }}</td>
+									<td>{{ item[3] }}</td>
+									<td>{{ item[4] }}</td>
+									<td>{{ item[5] }}</td>
+									<td>{{ item[6] }}</td>
+									<td>{{ item[7].name }}</td>
+									<td>
+										{% if user.role_id == item[7].id %}
+										<form action="" method="post" name="update">
+											{{ form.hidden_tag() }}
+											<input type="hidden" name="reg_number" value="{{ item[0] }}" />
+											<input type="hidden" name="status" value="{{ item[7].id }}" />
+											<button type="submit" class="btn btn-default btn-xs"><span class="lnr lnr-pencil" aria-hidden="true"></span></button>											{% endif %}
+										</form>
+									</td>
+								</tr>
+								{% endfor %}
+							</tbody>
+						</table>
+					</div>
+				</div>
+			</div>
+			{% endif %}
+		</div>
+	</div>
+</div>
+{% endblock %}
