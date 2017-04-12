@@ -161,3 +161,6 @@ sudo systemctl enable myproject
 ```
 
 Готово!
+
+---
+В проекте был использован бесплатный шаблон [Klorofil.](https://www.themeineed.com/downloads/klorofil-free-bootstrap-dashboard-template/)
