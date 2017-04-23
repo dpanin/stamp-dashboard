@@ -2,6 +2,8 @@
 Простая система для регистрации отслеживания заявлений акцизных марок.
 
 
+![alt tag](https://raw.githubusercontent.com/dpanin/stamp-dashboard/master/screenshot.png)
+
 # Инструкция по установке на Ubuntu
 
 ## Установка и настройка Redis
