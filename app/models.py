@@ -134,7 +134,6 @@ class Document(db.Model):
     @classmethod
     def search(cls, keyword):
         """Searches entry with the same registration number."""
-        print(keyword)
         query = db.session.query(Document).filter_by(
             registration_number=keyword).all()
         return cls.format_query(query)
