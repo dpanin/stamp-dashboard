@@ -12,7 +12,8 @@
                         </div>
                         <div class="panel-body">
                             <form action="" method="post" name="login">
-                                {{ form.hidden_tag() }} {{ form.reg_number(class="form-control input-lg", placeholder="XXXXXX/17/XXXXXX") }}
+                                <p>Формат ввода: <b>XXXXXX/17/XXXXX</b></p>
+                                {{ form.hidden_tag() }} {{ form.reg_number(class="form-control input-lg", placeholder="XXXXXX/17/XXXXX") }}
                                 <br>
                                 <p><b>Первые шесть цифр</b> - код уполномоченного таможенного органа</p>
                                 <p><b>17</b> - год регистрации</p>
