@@ -119,26 +119,28 @@ def edit():
             table_results = Document.search(form.reg_number.data)
             if not table_results:
                 flash("Ошибка! Заявление не найдено.")
+            form = SearchForm()
             return render_template(
                 'edit.html',
                 title='Редактирование заявления',
                 user=user,
                 form=form,
                 table_results=table_results)
+    elif form.reg_number.data is not None:
         # Update entry if User pressed the button.
         if request.form['status']:
-            reg_number = request.form['reg_number']
+            reg_number = request.form['reg_number1']
             doc_id = request.form['status']
             Document.update(reg_number, doc_id)
             flash("Заявление успешно обновлено.")
-    elif form.reg_number.data is not None:
-        flash("Ошибка! Проверьте введенные данные.")
-        return render_template(
-            'edit.html',
-            title='Редактирование заявления',
-            user=user,
-            form=form,
-            table_results=table_results)
+        else:
+            flash("Ошибка! Проверьте введенные данные.")
+            return render_template(
+                'edit.html',
+                title='Редактирование заявления',
+                user=user,
+                form=form,
+                table_results=table_results)
 
     return render_template(
         'edit.html',
