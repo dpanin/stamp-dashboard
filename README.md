@@ -11,7 +11,7 @@
 Установите требуемые пакеты:
 ```sh
 sudo apt-get update
-sudo apt-get install python3-pip python3-dev build-essential tcl
+sudo apt-get install python3-pip python3-venv python3-dev build-essential tcl
 ```
 
 Скачайте и распакуйте Redis:
@@ -43,7 +43,7 @@ sudo mkdir /etc/redis
 
 Скопируйте настройки по умолчанию:
 ```sh
-sudo cp /tmp/redis-stable/redis.conf /etc/redis
+sudo cp redis.conf /etc/redis
 ```
 
 В файле с настройками найдите строку `supervised no` и измените её на:
