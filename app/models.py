@@ -3,11 +3,11 @@ import os
 import time
 from datetime import datetime
 
-from app import db, reds
 from flask_login import UserMixin
 from sqlalchemy import desc
 from werkzeug.security import check_password_hash, generate_password_hash
 
+from app import db, reds
 from . import login_manager
 
 
@@ -147,11 +147,11 @@ class Document(db.Model):
         s_id = str(id_number + 1)
         db.session.query(Document).filter_by(
             registration_number=reg_number).update(
-                {
-                    cls.columns[id_number]: dtime,
-                    "status_id": s_id
-                },
-                synchronize_session=False)
+            {
+                cls.columns[id_number]: dtime,
+                "status_id": s_id
+            },
+            synchronize_session=False)
         db.session.commit()
         reds.zrem(id_number, reg_number)
         reds.zadd(id_number + 1, tstamp, reg_number)

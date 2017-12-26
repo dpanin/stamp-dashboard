@@ -2,8 +2,6 @@ from flask_wtf import FlaskForm
 from wtforms import BooleanField, PasswordField, StringField, IntegerField
 from wtforms.validators import DataRequired, Email, Length, Regexp
 
-from .models import Document
-
 
 class LoginForm(FlaskForm):
     """Login forms."""
@@ -18,7 +16,6 @@ class RegisterForm(FlaskForm):
     email = StringField('Email', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired()])
     level = IntegerField('Level', validators=[DataRequired()])
-
 
 
 class SearchForm(FlaskForm):

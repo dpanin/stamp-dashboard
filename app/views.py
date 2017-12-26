@@ -1,7 +1,7 @@
-from app import app, reds, db
 from flask import flash, g, redirect, render_template, request, send_file, url_for
 from flask_login import current_user, login_required, login_user, logout_user
 
+from app import app, reds, db
 from .forms import LoginForm, SearchForm, RegisterForm
 from .models import Document, User
 
@@ -28,6 +28,7 @@ def login():
             return render_template('login.html', title='Логин', form=form, error=error)
     return render_template('login.html', title='Логин', form=form)
 
+
 @login_required
 @app.route('/register', methods=['GET', 'POST'])
 def register():
@@ -38,7 +39,8 @@ def register():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data).first()
         if user is None:
-            u = User(username=form.username.data, email=form.email.data, password=form.password.data, role_id=form.level.data)
+            u = User(username=form.username.data, email=form.email.data, password=form.password.data,
+                     role_id=form.level.data)
             db.session.add(u)
             db.session.commit()
             flash("Пользователь успешно зарегистрирован")
@@ -48,6 +50,7 @@ def register():
     elif form.email.data is not None:
         flash("Ошибка! Проверьте правильность введенных данных")
     return render_template('register.html', title='Регистрация', form=form)
+
 
 @app.route('/logout')
 @login_required
